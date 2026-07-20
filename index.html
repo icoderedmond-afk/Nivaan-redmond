@@ -80,9 +80,8 @@
       padding: 14px 32px;
       font-size: 1.2rem;
       font-weight: bold;
-      color: #ffffff;
-      background: #00ffcc;
       color: #000;
+      background: #00ffcc;
       border: none;
       border-radius: 30px;
       cursor: pointer;
@@ -149,7 +148,7 @@
 
     const paddleWidth = 14;
     const paddleHeight = 90;
-    const paddleSpeed = 8;
+    const paddleSpeed = 7; // Balanced paddle speed
 
     // Player 1 Paddle
     const p1 = {
@@ -169,14 +168,16 @@
       color: "#ff3366"
     };
 
-    // Ball Object
+    // NORMAL BALL SPEED
+    const INITIAL_BALL_SPEED = 5; 
+    
     const ball = {
       x: canvas.width / 2,
       y: canvas.height / 2,
       radius: 9,
-      speed: 6,
-      vx: 5,
-      vy: 5,
+      speed: INITIAL_BALL_SPEED,
+      vx: 4,
+      vy: 3,
       color: "#ffff00"
     };
 
@@ -188,10 +189,9 @@
       ArrowDown: false
     };
 
-    // Handle Keyboard Input safely
     window.addEventListener("keydown", (e) => {
       if (["ArrowUp", "ArrowDown", "Space"].includes(e.code)) {
-        e.preventDefault(); // Stop window from scrolling
+        e.preventDefault();
       }
 
       if (e.key === "w" || e.key === "W") keys.w = true;
@@ -215,9 +215,9 @@
     function resetBall() {
       ball.x = canvas.width / 2;
       ball.y = canvas.height / 2;
-      ball.speed = 6;
+      ball.speed = INITIAL_BALL_SPEED;
       ball.vx = -ball.vx;
-      ball.vy = (Math.random() > 0.5 ? 1 : -1) * 4;
+      ball.vy = (Math.random() > 0.5 ? 1 : -1) * 3;
     }
 
     function collision(b, p) {
@@ -259,7 +259,8 @@
         let angleRad = (Math.PI / 4) * collidePoint;
         let direction = ball.x < canvas.width / 2 ? 1 : -1;
 
-        ball.speed = Math.min(ball.speed + 0.3, 15);
+        // Moderate speed increase per hit up to max cap 10
+        ball.speed = Math.min(ball.speed + 0.2, 10);
         ball.vx = direction * ball.speed * Math.cos(angleRad);
         ball.vy = ball.speed * Math.sin(angleRad);
       }
@@ -277,10 +278,9 @@
     }
 
     function render() {
-      // Clear Canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Center Dashed Line
+      // Center Dashed Line
       ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
       ctx.lineWidth = 2;
       ctx.setLineDash([10, 10]);
@@ -290,14 +290,14 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Draw Paddles
+      // Paddles
       ctx.fillStyle = p1.color;
       ctx.fillRect(p1.x, p1.y, p1.width, p1.height);
 
       ctx.fillStyle = p2.color;
       ctx.fillRect(p2.x, p2.y, p2.width, p2.height);
 
-      // Draw Ball
+      // Ball
       ctx.fillStyle = ball.color;
       ctx.beginPath();
       ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -310,7 +310,6 @@
       requestAnimationFrame(gameLoop);
     }
 
-    // Start Render Loop
     gameLoop();
   </script>
 </body>
